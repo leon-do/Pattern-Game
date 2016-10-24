@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Find It</title>
+
+<!-- 160 lines of code -->
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+	<link href="https://fonts.googleapis.com/css?family=Amatic+SC" rel="stylesheet">
+
+
+	<style>
+		body{
+			margin:0;
+			background-color: #E6EBE0;
+		}
+		div{
+			text-align: center;
+			white-space:nowrap;
+			font-family: 'Amatic SC', cursive;
+			font-size: 40px;
+		}
+		button{
+			cursor: pointer;
+			position: relative;
+			width: 50px;
+			height: 50px;
+			font-size: 30px;
+			border: none;
+			color:white;
+			margin: 2px;
+			display: inline-block;
+			font-family: 'Amatic SC', cursive;
+			font-size: 40px;
+		}
+		button:focus{
+			outline:none; /*removes the blue highlight*/
+		}
+		#popup{
+    		visibility: hidden;
+			background-color: #E6EBE0;
+			position:absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			padding-top: 5%;
+		}
+		#playAgain, #nextLvl{
+			width: 100%;
+		}
+		#playAgain:hover, #nextLvl:hover{
+			background-color: #88D498;
+		}
+	</style>
+</head>
+<body>
+	<div> learn the pattern </div>
+	<div id="guesses"> guesses left: 5 </div>
+	<div id="container"> </div>
+	<div id="popup"> </div>
+
+	<script>
+		var guessesLeft = 5;
+		var gridSize = 1; // 3 means a grid size of 3x3
+
+		// makes the grid
+		makeGrid(gridSize);
+		
+		// pickRandomZero picks a random location to place 'zero'
+		// surroundingNumbers populates the grid with numbers
+		surroundingNumbers(pickRandomZero(gridSize));
+
+
+		function makeGrid(gridSize){
+			// color each button
+			var colors = ["247BA0", "70C1B3", "B2DBBF","FF1654", "05668D", "028090", "00A896", "F25F5C", "247BA0", "70C1B3", "2EC4B6", "E71D36", "FF9F1C", "EF233C", "D90429", "E63946", "457B9D", "1D3557", "003459", "007EA7", "114B5F", "F45B69", "028090", "456990", "264653", "2A9D8F", "E76F51", "114B5F", "1A936F"]
+
+			var id = 0; //id each button
+
+			// loop for rows
+			for (var y = 0; y < gridSize; y++){
+
+				$("#container").append("<div class=row" + y + "> </div>")
+
+					// loop for buttons
+					for (var x = 0; x < gridSize; x++){
+
+						// append button
+						$(".row"+ y).append("<button id=eyeD"+ id + ">" + "." + "</button>");
+
+						// style the button
+						var randomColorIndex = Math.floor(Math.random() * colors.length);
+						$("#eyeD"+id).css("background-color","#" + colors[randomColorIndex])
+
+						id++;
+					}
+			}
+			
+		} // makeGrid
+
+
+
+
+		// picks a random location to place 'zero'
+		function pickRandomZero(gridSize){
+			var randomNumber = Math.floor(Math.random() * gridSize * gridSize)
+
+			$("#eyeD" + randomNumber).data("data","zero")
+			// $("#eyeD" + randomNumber).html("zero")
+
+			return randomNumber;
+		
+		} //pickRandomZero
+
+
+
+
+
+		// surrounds 'zero' with numbers
+		function surroundingNumbers(randomNumber){
+			// what column is Zero located in?
+			var column = randomNumber % gridSize;
+
+			// what row is Zero loated in?
+			var row = Math.floor(randomNumber / gridSize);
+
+			var incrementNumber = 1;
+			for (var i = 0; i < gridSize; i++){
+				// top side
+				if (row >= 0){
+					fillRow(row - incrementNumber, incrementNumber)
+				}
+
+				// bottom side
+				if (row < gridSize - 1){
+					fillRow(row + incrementNumber, incrementNumber)
+				}
+
+				// left side
+				if (column >= incrementNumber){
+					fillColumn(column - incrementNumber, incrementNumber)
+				}
+
+				// right side
+				if (column <= (gridSize - 1 - incrementNumber)){
+					fillColumn(column + incrementNumber, incrementNumber)
+				}
+
+				incrementNumber++
+
+			}
+
+
+		} //surroundingNumbers
+
+
+
+
+
+
+
+		// fills a whole column with theNumber
+		function fillColumn(column,theNumber){
+			for (i = 0; i < gridSize * gridSize; i = i + gridSize){
+				//$("#eyeD" + (column + i)).html(theNumber)
+				$("#eyeD" + (column + i)).data("data",theNumber)
+			}
+		} 
+
+		// fills a whole row with theNumber
+		function fillRow(row,theNumber){
+			// write here to fill row
+			//$(".row" + row).children().html(theNumber)
+			$(".row" + row).children().data("data",theNumber)
+		} 
+
+
+
+
+
+
+
+		// on click 
+		$("#container").on("click","button",function(){
+
+			if ($(this).html() === "."){
+
+				// display number
+				$(this).html($(this).data("data"))
+
+				// if incorrect
+				if ($(this).html() !== "zero"){
+					guessesLeft--;
+					$("#guesses").html("gueses left: " + guessesLeft)
+				}
+
+				// if lose
+				if (guessesLeft === 0){
+					displayPopup("lose")
+				}
+
+				// if win
+				if ($(this).html() == "zero"){
+					displayPopup("win")
+				}
+
+			} // if !== &nbsp
+		})
+
+
+
+		// stuff on popup screen
+		function displayPopup(status){
+			// show popup
+			$("#popup").css("visibility","visible")
+
+			// makes the playAgain button
+			if (status === "lose"){
+				$("#popup").html(
+					"good game... <br>" +
+					"grid size: " + gridSize + "x" + gridSize + "<br>" +
+					"hint: if you understand the pattern, <br> then you can beat any level <br> in only 5 moves" + "<br>" +
+					"<button id=playAgain> play again </button>")
+			}
+			if (status === "win"){
+				var encouragement = ["niice", "y@y","u guud", "playa", "<3", "jeanyus", "kollege","whoahaw!", "snice", "you go girl/guy", "props", "party time.", "getIt!", "dontFup", "awe +sum", "gr8 job", "I'm ur #1 fan", "notice the pattern?"]
+
+				// makes the nextLvl button
+				$("#popup").html(
+					encouragement[Math.floor(Math.random()*encouragement.length)] + ".<br>" +
+					"completed grid: " + gridSize + "x" + gridSize + "<br>" +
+					"<button id=nextLvl> > </button>")
+			}
+		}
+
+
+
+		// nextLvl button
+		$("#popup").on("click","#nextLvl",function(){
+			$("#popup").css("visibility","hidden")
+			$("#container").empty();
+			guessesLeft = 5;
+			$("#guesses").html("gueses left: " + guessesLeft)
+			gridSize++;
+			makeGrid(gridSize);
+			surroundingNumbers(pickRandomZero(gridSize));
+		})
+
+
+
+
+		// playAgain button
+		$("#popup").on("click","#playAgain",function(){
+			$("#popup").css("visibility","hidden")
+			$("#container").empty();
+			guessesLeft = 5;
+			$("#guesses").html("gueses left: " + guessesLeft)
+			gridSize = 1;
+			makeGrid(gridSize);
+			surroundingNumbers(pickRandomZero(gridSize));			
+		})
+
+
+	</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
