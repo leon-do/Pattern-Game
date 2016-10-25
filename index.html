@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Find It</title>
+	<title>Patterns</title>
 
 <!-- 160 lines of code -->
 
@@ -33,6 +33,11 @@
 			display: inline-block;
 			font-family: 'Amatic SC', cursive;
 			font-size: 40px;
+			border-radius: 10px;
+			opacity: 0.9;
+		}
+		button:hover{
+			opacity:1;
 		}
 		button:focus{
 			outline:none; /*removes the blue highlight*/
@@ -56,7 +61,7 @@
 </head>
 <body>
 	<div> learn the pattern </div>
-	<div id="guesses"> guesses left: 5 </div>
+	<div id="guesses"> </div>
 	<div id="container"> </div>
 	<div id="popup"> </div>
 
@@ -217,6 +222,8 @@
 
 			// makes the playAgain button
 			if (status === "lose"){
+				$("#container").empty();
+
 				$("#popup").html(
 					"good game... <br>" +
 					"grid size: " + gridSize + "x" + gridSize + "<br>" +
@@ -224,6 +231,8 @@
 					"<button id=playAgain> play again </button>")
 			}
 			if (status === "win"){
+				$("#container").empty();
+
 				var encouragement = ["niice", "y@y","u guud", "playa", "<3", "jeanyus", "kollege","whoahaw!", "snice", "you go girl/guy", "props", "party time.", "getIt!", "dontFup", "awe +sum", "gr8 job", "I'm ur #1 fan", "notice the pattern?"]
 
 				// makes the nextLvl button
@@ -253,9 +262,8 @@
 		// playAgain button
 		$("#popup").on("click","#playAgain",function(){
 			$("#popup").css("visibility","hidden")
-			$("#container").empty();
 			guessesLeft = 5;
-			$("#guesses").html("gueses left: " + guessesLeft)
+			$("#guesses").html("guesses left: " + guessesLeft)
 			gridSize = 1;
 			makeGrid(gridSize);
 			surroundingNumbers(pickRandomZero(gridSize));			
